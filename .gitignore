@@ -1,0 +1,40 @@
+# --- Global ---
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# --- Git ---
+.git/
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+*.tfvars
+
+# --- Ansible ---
+*.retry
+
+# --- Node.js (Frontend & Backend) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json # Optional: Some teams keep this, others don't. Keeping is usually better, but ignoring for now to save space if needed. We'll keep it.
+# Actually, let's allow package-lock.json, it's good practice.
+
+# --- Frontend (Create-React-App) ---
+build/
+.pnp
+.pnp.js
+coverage/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Backend ---
+.env
+dist/
+coverage/

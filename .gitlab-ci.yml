@@ -1,0 +1,61 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  # This tells Node to build for production
+  NODE_ENV: "production"
+
+# --- 1. Frontend: Build & Upload to AWS S3 ---
+deploy_frontend:
+  stage: deploy
+  image: node:18-alpine
+  tags:
+    - self-hosted  # Runs on your Dep System Runner
+  script:
+    - echo "🚀 Starting Frontend Build..."
+    - cd frontend
+    - npm install
+    - npm run build
+    - echo "📦 Build complete. Syncing to S3..."
+    # Install AWS CLI temporarily
+    - apk add --no-cache aws-cli
+    # Sync the 'build' folder to the S3 bucket defined in Terraform variables
+    - aws s3 sync build/ s3://$TF_OUTPUT_BUCKET --delete
+    - echo "✅ Frontend deployed to S3!"
+
+# --- 2. Backend: Build & Run on Dep System ---
+deploy_backend:
+  stage: deploy
+  tags:
+    - self-hosted  # Runs on your Dep System Runner
+  script:
+    - echo "🐳 Starting Backend Deployment..."
+    - cd backend
+    
+    # 1. Build the new image
+    - docker build -t hybrid-backend .
+    
+    # 2. Cleanup: Stop and remove the old container (if it exists)
+    - docker stop hybrid_backend || true
+    - docker rm hybrid_backend || true
+    
+    # 3. Run the new container
+    # We pass the AWS RDS details (from GitLab Variables) into the container here
+    - |
+      docker run -d \
+      --name hybrid_backend \
+      --restart always \
+      -p 5000:5000 \
+      -e DB_HOST=$TF_OUTPUT_DB \
+      -e DB_USER=pawan_admin \
+      -e DB_PASS=$DB_PASSWORD \
+      -e DB_NAME=hybrid_db \
+      hybrid-backend
+      
+    - echo "✅ Backend container running on Dep System!"

@@ -1,0 +1,53 @@
+---
+- name: Prepare Dep System for Hybrid Cloud
+  hosts: dep_system
+  become: true
+  tasks:
+    - name: Remove broken apt sources (Fix for 'zara' release error)
+      shell: "grep -rl 'zara' /etc/apt/sources.list.d/ | xargs -r rm"
+      ignore_errors: yes
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Dependencies
+      apt:
+        name:
+          - unzip
+          - python3-pip
+        state: present
+
+    - name: Install Docker Python Library
+      pip:
+        name: docker
+        executable: pip3
+        extra_args: "--break-system-packages"
+
+    # AWS CLI Installation (Manual due to apt issues)
+    - name: Download AWS CLI installer
+      get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+        dest: "/tmp/awscliv2.zip"
+
+    - name: Unarchive AWS CLI installer
+      unarchive:
+        src: "/tmp/awscliv2.zip"
+        dest: "/tmp"
+        remote_src: yes
+
+    - name: Install or Update AWS CLI
+      command: "/tmp/aws/install --update"
+
+    - name: Ensure Docker is active
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create Backend Directory
+      file:
+        path: /opt/hybrid-backend
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user }}"
