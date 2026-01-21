@@ -34,6 +34,9 @@ deploy_backend:
   stage: deploy
   tags:
     - self-hosted  # Runs on your Dep System Runner
+  variables:
+    # This tells Docker to talk over plain HTTP (fixes the connection error)
+    DOCKER_TLS_CERTDIR: ""
   script:
     - echo "🐳 Starting Backend Deployment..."
     - cd backend
