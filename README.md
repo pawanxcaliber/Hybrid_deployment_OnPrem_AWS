@@ -1,9 +1,9 @@
 # Hybrid Cloud Deployment: AWS (Frontend/DB) + On-Prem (Backend)
 
-## 📖 Project Overview
+## Project Overview
 This project implements a Hybrid Cloud Architecture that bridges public cloud services (AWS) with private on-premise infrastructure (Home Lab). It demonstrates cost-effective scaling by hosting the database and frontend on the cloud while keeping the compute-heavy backend API on local hardware.
 
-## 🏗️ Architecture Design
+## Architecture Design
 ```text
    YOUR DEV LAPTOP                       GITLAB (CI/CD)
    +---------------------+             +-------------------------+
@@ -23,7 +23,7 @@ This project implements a Hybrid Cloud Architecture that bridges public cloud se
 |   |   (Your Linux Lab)    |           |      (ap-south-1)         |   |
 |   |                       |           |                           |   |
 |   | +-------------------+ |  Uploads  | +-----------------------+ |   |
-|   | |  GitLab Runner 🏃 |+----------->| | 📦 S3 Bucket (Web)    | |   |
+|   | |  GitLab Runner 🏃 |+----------->| | S3 Bucket (Web)       | |   |
 |   | | (System/Privileged)| (Frontend) | | (Hosting React App)   | |   |
 |   | +---------+---------+ |           | +----------^------------+ |   |
 |   |           |           |           |            |              |   |
@@ -42,7 +42,7 @@ This project implements a Hybrid Cloud Architecture that bridges public cloud se
           (Fetch Data)
                 |
       +---------+---------+
-      | 🌍  END USER      |
+      |     END USER      |
       | (Browser/Mobile)  |
       +-------------------+
 ```
@@ -52,7 +52,7 @@ This project implements a Hybrid Cloud Architecture that bridges public cloud se
 - **Database (Public Cloud)**: MySQL hosted on AWS RDS (Relational Database Service) for reliability.
 - **Orchestration**: GitLab CI/CD automates deployment to both environments simultaneously via a self-hosted runner.
 
-## � Project File Structure
+## Project File Structure
 ```
 Hybrid_Cloud_Project/
 ├── .gitignore
@@ -91,7 +91,7 @@ Hybrid_Cloud_Project/
     └── terraform.tfstate.backup
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Infrastructure as Code**: Terraform (AWS Resources)
 - **Configuration Management**: Ansible (Provisioning Dep System)
 - **CI/CD**: GitLab CI (Pipelines & Runners)
@@ -101,7 +101,7 @@ Hybrid_Cloud_Project/
 
 ---
 
-## ⚙️ Part 1: Infrastructure Setup (Terraform)
+## Part 1: Infrastructure Setup (Terraform)
 We used Terraform to provision the "Cloud" half of the hybrid setup.
 
 ### 1. Key Resources Defined (main.tf)
@@ -130,7 +130,7 @@ terraform output
 
 ---
 
-## 🐧 Part 2: Dep System Configuration (Ansible)
+## Part 2: Dep System Configuration (Ansible)
 We used Ansible to turn a standard Linux laptop into a production-grade server.
 
 ### 1. The Playbook (setup.yml)
@@ -148,7 +148,7 @@ ansible-playbook -i inventory.ini setup.yml --user pawan --ask-pass
 
 ---
 
-## 🚀 Part 3: CI/CD Pipeline (GitLab)
+## Part 3: CI/CD Pipeline (GitLab)
 The pipeline connects the code to the infrastructure.
 
 ### 1. GitLab Variables (CI/CD Settings)
@@ -175,7 +175,7 @@ The pipeline has two primary parallel jobs:
 
 ---
 
-## 🏃 Part 4: The Runner (The Engine)
+## Part 4: The Runner (The Engine)
 This was the most critical component. We registered a specific runner on the Dep System to handle the workload.
 
 ### 1. Registration Command (System Mode)
@@ -202,7 +202,7 @@ sudo gitlab-runner register \
 
 ---
 
-## 🔧 Troubleshooting Chronicles (Troubles & Fixes)
+## Troubleshooting Chronicles (Troubles & Fixes)
 This project faced several real-world DevOps challenges. Here is how we solved them:
 
 ### 1. The "Protected Branch" Lock
@@ -245,7 +245,7 @@ This project faced several real-world DevOps challenges. Here is how we solved t
 
 ---
 
-## 📜 Final Deployment Commands
+## Final Deployment Commands
 
 **To Deploy Updates:**
 ```bash
