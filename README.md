@@ -3,6 +3,8 @@
 ## Project Overview
 This project implements a Hybrid Cloud Architecture that bridges public cloud services (AWS) with private on-premise infrastructure (Home Lab). It demonstrates cost-effective scaling by hosting the database and frontend on the cloud while keeping the compute-heavy backend API on local hardware.
 
+## GitLab repo link: https://gitlab.com/pawanmkolachippu/hybrid_deployment_onprem_aws
+
 ## Architecture Design
 ```text
    YOUR DEV LAPTOP                       GITLAB (CI/CD)
