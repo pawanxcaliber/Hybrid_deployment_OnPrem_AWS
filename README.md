@@ -4,45 +4,47 @@
 This project implements a Hybrid Cloud Architecture that bridges public cloud services (AWS) with private on-premise infrastructure (Home Lab). It demonstrates cost-effective scaling by hosting the database and frontend on the cloud while keeping the compute-heavy backend API on local hardware.
 
 ## 🏗️ Architecture Design
-## 🏗️ Architecture Design
-```mermaid
-graph TD
-    subgraph Dev_Environment [YOUR DEV LAPTOP]
-        Dev_Tools[Code / Terraform / Ansible]
-    end
-
-    subgraph GitLab_env [GITLAB CI/CD]
-        GitLab[Repo: hybrid_project<br/>Pipeline: .gitlab-ci]
-    end
-
-    subgraph Hybrid_Infra [HYBRID INFRASTRUCTURE]
-        direction LR
-        subgraph On_Prem [ON-PREM (Dep)]
-            Runner[GitLab Runner 🏃<br/>(System/Privileged)]
-            Backend[🐳 Backend Cont.<br/>(Node.js API)]
-        end
-        
-        subgraph AWS [AWS CLOUD (ap-south-1)]
-            S3[📦 S3 Bucket (Web)<br/>(Hosting React App)]
-            RDS[🛢️ RDS (MySQL)<br/>(Private DB Instance)]
-        end
-    end
-
-    User((END USER<br/>Browser/Mobile))
-
-    %% Flows
-    Dev_Tools -->|Push Code| GitLab
-    Dev_Tools -.->|Provision & Config| On_Prem
-    
-    GitLab -.->|Polling for Jobs| Runner
-    
-    Runner -->|Uploads Frontend| S3
-    Runner -->|Spawns Docker| Backend
-    
-    Backend <-->|Connects| RDS
-    
-    User -->|HTTPS Traffic| S3
-    User -->|API Requests| Backend
+```text
+   YOUR DEV LAPTOP                       GITLAB (CI/CD)
+   +---------------------+             +-------------------------+
+   |   (Windows/Linux)   |    Push     |                         |
+   | [ Code / Terraform ]+------------>|  Repo: hybrid_project   |
+   | [     Ansible      ]|    Code     |  [ Pipeline: .gitlab-ci]|
+   +----------+----------+             +------------+------------+
+              |                                     |
+              | Provision (Terraform)               | Polling for Jobs
+              | & Config (Ansible)                  | (Runner Connection)
+              v                                     v
++-----------------------------------------------------------------------+
+|                       HYBRID INFRASTRUCTURE                           |
+|                                                                       |
+|   +-----------------------+           +---------------------------+   |
+|   |   🏡 ON-PREM (Dep)    |           |       ☁️ AWS CLOUD        |   |
+|   |   (Your Linux Lab)    |           |      (ap-south-1)         |   |
+|   |                       |           |                           |   |
+|   | +-------------------+ |  Uploads  | +-----------------------+ |   |
+|   | |  GitLab Runner 🏃 |+----------->| | 📦 S3 Bucket (Web)    | |   |
+|   | | (System/Privileged)| (Frontend) | | (Hosting React App)   | |   |
+|   | +---------+---------+ |           | +----------^------------+ |   |
+|   |           |           |           |            |              |   |
+|   |      Spawns Docker    |           |            | HTTPS        |   |
+|   |           |           |           |            | Traffic      |   |
+|   |           v           |           |            |              |   |
+|   | +-------------------+ |  Connects | +----------+------------+ |   |
+|   | | 🐳 Backend Cont.  |+----------->| | 🛢️ RDS (MySQL)      | |   |
+|   | | (Node.js API)     | | (Database)| | (Private DB Instance) | |   |
+|   | +---------^---------+ |           | +-----------------------+ |   |
+|   +-----------|-----------+           +---------------------------+   |
+|               |                                                       |
++---------------|-------------------------------------------------------+
+                |
+          API Requests
+          (Fetch Data)
+                |
+      +---------+---------+
+      | 🌍  END USER      |
+      | (Browser/Mobile)  |
+      +-------------------+
 ```
 
 - **Frontend (Public Cloud)**: React application hosted on AWS S3 (Static Website Hosting).
