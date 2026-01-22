@@ -91,7 +91,7 @@ Hybrid_Cloud_Project/
     └── terraform.tfstate.backup
 ```
 
-## �🛠️ Tech Stack
+## 🛠️ Tech Stack
 - **Infrastructure as Code**: Terraform (AWS Resources)
 - **Configuration Management**: Ansible (Provisioning Dep System)
 - **CI/CD**: GitLab CI (Pipelines & Runners)
